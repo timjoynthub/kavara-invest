@@ -37,6 +37,7 @@ const title = `${resource.title} | Kavara Capital`;
           </div>
           <input name="sourcePath" type="hidden" value={resource.capturePath} />
           <input name="consentVersion" type="hidden" value="2026-09-22" />
+          <input name="cf-turnstile-response" type="hidden" value="" data-turnstile-response />
           <div class="turnstile-slot" data-turnstile-slot></div>
           <button type="submit">{resource.button}<span aria-hidden="true">↗</span></button>
           <p class="form-status" data-form-status aria-live="polite"></p>
@@ -64,7 +65,22 @@ const title = `${resource.title} | Kavara Capital`;
       script.defer = true;
       script.onload = () => {
         document.querySelectorAll('[data-turnstile-slot]').forEach((slot) => {
-          window.turnstile?.render(slot, { sitekey: turnstileSiteKey, theme: 'light' });
+          const form = slot.closest('[data-resource-form]');
+          const responseField = form?.querySelector('[data-turnstile-response]');
+          window.turnstile?.render(slot, {
+            sitekey: turnstileSiteKey,
+            theme: 'light',
+            'response-field': false,
+            callback(token) {
+              if (responseField) responseField.value = token;
+            },
+            'expired-callback'() {
+              if (responseField) responseField.value = '';
+            },
+            'error-callback'() {
+              if (responseField) responseField.value = '';
+            }
+          });
         });
       };
       document.head.append(script);
@@ -102,6 +118,8 @@ const title = `${resource.title} | Kavara Capital`;
         } catch (error) {
           status.textContent = error instanceof Error ? error.message : 'Something went wrong. Please try again.';
           button.disabled = false;
+          const responseField = form.querySelector('[data-turnstile-response]');
+          if (responseField) responseField.value = '';
           window.turnstile?.reset();
         }
       });
