@@ -46,7 +46,9 @@ async function verifyTurnstile(secret: string, token: string, ip: string | null)
   form.set('response', token);
   if (ip) form.set('remoteip', ip);
   const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', { method: 'POST', body: form });
-  return response.ok ? response.json() as Promise<{ success: boolean }> : { success: false };
+  return response.ok
+    ? response.json() as Promise<{ success: boolean; 'error-codes'?: string[] }>
+    : { success: false, 'error-codes': [`siteverify-http-${response.status}`] };
 }
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
@@ -68,7 +70,13 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
 
   if (!env.MAILERLITE_API_TOKEN || !env.TURNSTILE_SECRET_KEY) return json({ message: 'This preview is not connected yet. Please try again later.' }, 503);
   const turnstile = await verifyTurnstile(env.TURNSTILE_SECRET_KEY, String(body['cf-turnstile-response'] || ''), request.headers.get('CF-Connecting-IP'));
-  if (!turnstile.success) return json({ message: 'Please complete the security check and try again.' }, 400);
+  if (!turnstile.success) {
+    const hostname = new URL(request.url).hostname;
+    const previewDetail = hostname.endsWith('.pages.dev') && turnstile['error-codes']?.length
+      ? ` (${turnstile['error-codes'].join(', ')})`
+      : '';
+    return json({ message: `Please complete the security check and try again.${previewDetail}` }, 400);
+  }
 
   const groupEnvName = groupKeyByResource[body.resource as keyof typeof groupKeyByResource];
   const groupId = env[groupEnvName];
