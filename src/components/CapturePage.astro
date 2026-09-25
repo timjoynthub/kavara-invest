@@ -1,0 +1,110 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Brand from './Brand.astro';
+import type { Resource } from '../data/resources';
+
+interface Props { resource: Resource; }
+const { resource } = Astro.props;
+const title = `${resource.title} | Kavara Capital`;
+---
+<BaseLayout title={title} description={resource.description}>
+  <main id="main" class="capture-shell">
+    <section class="capture-panel" aria-labelledby="resource-title">
+      <div class="capture-copy">
+        <Brand dark />
+        <p class="eyebrow">{resource.eyebrow}</p>
+        <h1 id="resource-title">{resource.heading}</h1>
+        <p class="lede">{resource.description}</p>
+        <ul class="benefit-list">
+          {resource.points.map((point) => <li>{point}</li>)}
+        </ul>
+
+        <form class="capture-form" data-resource-form data-resource={resource.key} data-success={resource.thanksPath} novalidate>
+          <div class="form-row">
+            <label for={`first-name-${resource.key}`}>First name <span>(optional)</span></label>
+            <input id={`first-name-${resource.key}`} name="firstName" type="text" autocomplete="given-name" maxlength="80" />
+          </div>
+          <div class="form-row">
+            <label for={`email-${resource.key}`}>Email address</label>
+            <input id={`email-${resource.key}`} name="email" type="email" autocomplete="email" inputmode="email" required />
+          </div>
+          <label class="consent-row">
+            <input name="consent" type="checkbox" value="yes" required />
+            <span>Send me this resource and relevant Kavara Capital investor insights. I can unsubscribe at any time.</span>
+          </label>
+          <div class="hp-field" aria-hidden="true">
+            <label>Company<input name="company" type="text" tabindex="-1" autocomplete="off" /></label>
+          </div>
+          <input name="sourcePath" type="hidden" value={resource.capturePath} />
+          <input name="consentVersion" type="hidden" value="2026-09-22" />
+          <div class="turnstile-slot" data-turnstile-slot></div>
+          <button type="submit">{resource.button}<span aria-hidden="true">↗</span></button>
+          <p class="form-status" data-form-status aria-live="polite"></p>
+          <p class="privacy-note">Your details are used to deliver the requested resource and related investor insights. See our <a href="https://kavaracapital.com/privacy" target="_blank" rel="noopener noreferrer">privacy information</a>.</p>
+        </form>
+      </div>
+      <div class="capture-visual">
+        <img src={resource.cover} alt={resource.coverAlt} width="900" height="680" />
+        <p>Independent information for considered decisions.</p>
+      </div>
+    </section>
+  </main>
+  <footer class="minimal-footer">
+    <p>KAVARA CAPITAL trading as SOLARAE CAPITAL INDONESIA</p>
+    <a href="https://kavaracapital.com/">kavaracapital.com</a>
+  </footer>
+  <script define:vars={{ turnstileSiteKey: import.meta.env.PUBLIC_TURNSTILE_SITE_KEY }}>
+    const forms = document.querySelectorAll('[data-resource-form]');
+
+    function loadTurnstile() {
+      if (!turnstileSiteKey) return;
+      const script = document.createElement('script');
+      script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+      script.async = true;
+      script.defer = true;
+      script.onload = () => {
+        document.querySelectorAll('[data-turnstile-slot]').forEach((slot) => {
+          window.turnstile?.render(slot, { sitekey: turnstileSiteKey, theme: 'light' });
+        });
+      };
+      document.head.append(script);
+    }
+
+    loadTurnstile();
+
+    forms.forEach((form) => {
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const status = form.querySelector('[data-form-status]');
+        const button = form.querySelector('button[type="submit"]');
+        if (!form.reportValidity()) return;
+        status.textContent = 'Submitting securely…';
+        button.disabled = true;
+
+        const data = Object.fromEntries(new FormData(form).entries());
+        data.resource = form.dataset.resource;
+        data.pageUrl = window.location.href;
+        data.referrer = document.referrer;
+        const params = new URLSearchParams(window.location.search);
+        ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'].forEach((key) => {
+          if (params.has(key)) data[key] = params.get(key);
+        });
+
+        try {
+          const response = await fetch('/api/subscribe', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify(data)
+          });
+          const result = await response.json();
+          if (!response.ok) throw new Error(result.message || 'Unable to submit the form.');
+          window.location.assign(form.dataset.success);
+        } catch (error) {
+          status.textContent = error instanceof Error ? error.message : 'Something went wrong. Please try again.';
+          button.disabled = false;
+          window.turnstile?.reset();
+        }
+      });
+    });
+  </script>
+</BaseLayout>

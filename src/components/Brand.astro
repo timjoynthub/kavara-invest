@@ -1,0 +1,8 @@
+---
+interface Props { dark?: boolean; }
+const { dark = false } = Astro.props;
+---
+<a class:list={['brand', { dark }]} href="https://kavaracapital.com/" aria-label="Kavara Capital home">
+  <img src="/images/kavara-logo-white.png" alt="" width="48" height="48" />
+  <span>KAVARA<br />CAPITAL</span>
+</a>

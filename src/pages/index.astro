@@ -1,0 +1,26 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Brand from '../components/Brand.astro';
+import { resources } from '../data/resources';
+const items = Object.values(resources);
+---
+<BaseLayout title="Investor Resources | Kavara Capital" description="Kavara Capital investor guides and structured entry resources.">
+  <main id="main" class="resource-index">
+    <header class="index-hero">
+      <Brand />
+      <p class="eyebrow light">Investor resources</p>
+      <h1>Start <em>here.</em></h1>
+      <p>Access practical guides designed to support more informed decisions about Lombok property investment.</p>
+    </header>
+    <section class="index-grid" aria-label="Available investor resources">
+      {items.map((item) => (
+        <a href={item.capturePath} class="index-card">
+          <img src={item.cover} alt={item.coverAlt} />
+          <p class="eyebrow">{item.eyebrow}</p>
+          <h2>{item.title}</h2>
+          <span>Access resource →</span>
+        </a>
+      ))}
+    </section>
+  </main>
+</BaseLayout>
