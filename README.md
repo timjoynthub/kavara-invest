@@ -2,6 +2,10 @@
 
 Branded investor-resource capture and download pages for `invest.kavaracapital.com`.
 
+The site root redirects to the main Kavara Capital resources hub at
+`https://www.kavaracapital.com/resources`; the Astro project hosts only the
+individual capture and download journeys.
+
 ## Current scope
 
 - `/get-blueprint/` → `/thank-you-blueprint/`
