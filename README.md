@@ -12,7 +12,9 @@ individual capture and download journeys.
 - `/small-group-entry/` → `/small-group-entry-download/`
 - `/10-questions-for-investors/` → `/10-questions-for-investors-download/`
 
-The existing Systeme.io deployment and DNS remain unchanged until a Cloudflare preview is reviewed and explicitly approved.
+Production moved from Systeme.io to the Git-connected Cloudflare Pages project on
+26 September 2026 after the preview and all three resource flows were approved.
+The former Systeme.io deployment has been retained for rollback.
 
 ## Architecture
 
@@ -51,13 +53,28 @@ The matching MailerLite custom fields must exist before forms are activated: `re
 
 ## Deployment and rollback
 
+Current production configuration:
+
+- Repository: `timjoynthub/kavara-invest` (private)
+- Cloudflare Pages project: `kavara-invest`
+- Pages deployment: `https://kavara-invest.pages.dev`
+- Production domain: `https://invest.kavaracapital.com`
+- The production site root redirects to `https://www.kavaracapital.com/resources`.
+- MailerLite automations for all three resources were active at cutover.
+
 1. Create a private GitHub repository and Git-connected Cloudflare Pages project.
 2. Build command: `npm run build`; output directory: `dist`.
 3. Configure preview values using test MailerLite groups and Turnstile test keys.
 4. Validate every route, form outcome, automation and download on the `pages.dev` preview.
 5. Record the existing `invest.kavaracapital.com` CNAME and Systeme.io funnel state.
 6. Only after explicit approval, attach `invest.kavaracapital.com` to the new project and change the DNS record.
-7. To roll back, restore the recorded CNAME to its prior Systeme.io/CloudFront destination. Do not delete the old funnels during the validation period.
+7. To roll back, remove `invest.kavaracapital.com` from the `kavara-invest`
+   Pages custom domains and restore the DNS-only `invest` CNAME to
+   `d2ny50o2qf5dmb.cloudfront.net`. Do not delete the old funnels during the
+   validation period.
+
+After any future production deployment, verify `/`, all six capture/download
+routes, Turnstile, MailerLite group assignment and one automation delivery.
 
 ## Private material
 
