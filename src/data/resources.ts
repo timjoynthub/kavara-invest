@@ -17,6 +17,7 @@ export const resources = {
     downloadUrl: 'https://kavaracapital.com/blueprint',
     downloadButton: 'Download Investor Blueprint',
     cover: '/images/card-investor-blueprint.jpg',
+    captureCover: '/images/card-investor-blueprint.jpg',
     coverAlt: 'Kavara Capital Investor Blueprint displayed across digital devices and print'
   },
   smallGroup: {
@@ -37,6 +38,7 @@ export const resources = {
     downloadUrl: 'https://www.kavaracapital.com/small-group-entry-pdf',
     downloadButton: 'Download Small Group Entry Guide',
     cover: '/images/card-small-group-entry.jpg',
+    captureCover: '/images/card-small-group-entry.jpg',
     coverAlt: 'A small group reviewing plans for a structured Lombok opportunity'
   },
   tenQuestions: {
@@ -57,6 +59,7 @@ export const resources = {
     downloadUrl: 'https://www.kavaracapital.com/10-questions-investor-guide-pdf',
     downloadButton: 'Download the Guide',
     cover: '/images/card-10-questions-guide.jpg',
+    captureCover: '/images/cover-10-questions-guide.jpg',
     coverAlt: '10 Questions Every Lombok Investor Should Ask Before Investing guide'
   }
 } as const;
