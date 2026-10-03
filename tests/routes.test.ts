@@ -32,3 +32,11 @@ test('resource submissions also enter the shared nurture group', () => {
   assert.match(handler, /MAILERLITE_GROUP_NURTURE_ENTRY/);
   assert.match(handler, /groups:\s*\[groupId, nurtureGroupId\]/);
 });
+
+test('Tally contact submissions require a signed webhook and marketing consent', () => {
+  const handler = readFileSync(resolve('functions/api/tally-contact.ts'), 'utf8');
+  assert.match(handler, /tally-signature/);
+  assert.match(handler, /verifySignature/);
+  assert.match(handler, /no-marketing-consent/);
+  assert.match(handler, /MAILERLITE_GROUP_NURTURE_ENTRY/);
+});
