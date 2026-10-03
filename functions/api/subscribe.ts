@@ -5,6 +5,7 @@ interface Env {
   MAILERLITE_GROUP_BLUEPRINT: string;
   MAILERLITE_GROUP_SMALL_GROUP: string;
   MAILERLITE_GROUP_TEN_QUESTIONS: string;
+  MAILERLITE_GROUP_NURTURE_ENTRY: string;
 }
 
 interface Submission {
@@ -81,6 +82,8 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   const groupEnvName = groupKeyByResource[body.resource as keyof typeof groupKeyByResource];
   const groupId = env[groupEnvName];
   if (!groupId) return json({ message: 'This resource is not connected yet. Please try again later.' }, 503);
+  const nurtureGroupId = env.MAILERLITE_GROUP_NURTURE_ENTRY;
+  if (!nurtureGroupId) return json({ message: 'The nurture journey is not connected yet. Please try again later.' }, 503);
 
   const fields: Record<string, string> = {
     resource_requested: String(body.resource),
@@ -108,7 +111,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     body: JSON.stringify({
       email,
       fields,
-      groups: [groupId],
+      groups: [groupId, nurtureGroupId],
       status: 'active',
       subscribed_at: now,
       opted_in_at: now,

@@ -47,7 +47,14 @@ Environment variables (group IDs are identifiers, but keeping deployment configu
 - `MAILERLITE_GROUP_BLUEPRINT`
 - `MAILERLITE_GROUP_SMALL_GROUP`
 - `MAILERLITE_GROUP_TEN_QUESTIONS`
+- `MAILERLITE_GROUP_NURTURE_ENTRY`
 - `PUBLIC_TURNSTILE_SITE_KEY` at build time
+
+Every successful resource form submission is assigned to both its resource-specific
+group and the shared nurture-entry group. The live welcome-and-nurture automation
+should use only the shared nurture-entry group as its `Joins group` trigger. Resource
+downloads remain available immediately on the website thank-you pages and do not
+require delivery-email automations.
 
 The matching MailerLite custom fields must exist before forms are activated: `resource_requested`, `capture_source`, `consent_version`, `consent_timestamp`, `page_url`, `referrer`, and the five standard `utm_*` fields.
 

@@ -26,3 +26,9 @@ test('secret and private-reference patterns are excluded from git', () => {
     assert.ok(ignore.includes(pattern), `missing ignore pattern: ${pattern}`);
   }
 });
+
+test('resource submissions also enter the shared nurture group', () => {
+  const handler = readFileSync(resolve('functions/api/subscribe.ts'), 'utf8');
+  assert.match(handler, /MAILERLITE_GROUP_NURTURE_ENTRY/);
+  assert.match(handler, /groups:\s*\[groupId, nurtureGroupId\]/);
+});
