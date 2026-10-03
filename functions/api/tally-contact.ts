@@ -26,7 +26,7 @@ interface TallyWebhook {
   };
 }
 
-const DEFAULT_CONTACT_FORM_ID = 'r1AGb6p';
+const DEFAULT_CONTACT_FORM_ID = '1AGb6p';
 
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {

@@ -49,7 +49,7 @@ Environment variables (group IDs are identifiers, but keeping deployment configu
 - `MAILERLITE_GROUP_TEN_QUESTIONS`
 - `MAILERLITE_GROUP_NURTURE_ENTRY`
 - `TALLY_WEBHOOK_SECRET` (encrypted secret used to verify signed Tally webhook requests)
-- `TALLY_CONTACT_FORM_ID` (optional; defaults to `r1AGb6p` for the current contact form)
+- `TALLY_CONTACT_FORM_ID` (optional; defaults to `1AGb6p` for the current contact form)
 - `PUBLIC_TURNSTILE_SITE_KEY` at build time
 
 Every successful resource form submission is assigned to both its resource-specific
